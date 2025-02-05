@@ -1,109 +1,132 @@
-import React, { useEffect, useState } from 'react'
-import { use } from 'react'
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 function Mainpage() {
-  const[date,setdate]=useState(null)
-  const[sourcecurrency,setsourcecurrency]=useState(null)
-  const[targetcurrecy,settargetcurrency]=useState(null)
-  const[amountinsourcecurrency,setamountinsourcecurrency]=useState(1)
-  const[amountintargetcurrency,setamountintargetcurrency]=useState(1)
-  const[currencynames,setcurrencynames]=useState([])
+  const [date, setDate] = useState('');
+  const [sourceCurrency, setSourceCurrency] = useState('');
+  const [targetCurrency, setTargetCurrency] = useState('');
+  const [amountInSourceCurrency, setAmountInSourceCurrency] = useState(1);
+  const [currencyNames, setCurrencyNames] = useState([]);
 
-  //handlesubmit
+  useEffect(() => {
+    const getCurrencyNames = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/getallcurrencies");
+        
+        console.log("API Response:", response.data); // ✅ Debugging log
+  
+        if (response.data && typeof response.data === "object") {
+          setCurrencyNames(response.data);
+        } else {
+          console.error("Unexpected API response format:", response.data);
+        }
+      } catch (err) {
+        console.error("API Fetch Error:", err);
+      }
+    };
+    getCurrencyNames();
+  }, []);
 
-  const handlesubmit=(e)=>{
+  const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(
-      date,
-      sourcecurrency,
-      targetcurrecy,
-      amountinsourcecurrency
-    );
-  }
+    console.log(date, sourceCurrency, targetCurrency, amountInSourceCurrency);
+  };
 
-  useEffect(()=>{
-const getcurrencynames=async()=>{
-  try{
-    const responce = await axios.get(
-      "http://localhost:5000/getallcurrencies"
-    );
-    setcurrencynames(responce.data);
-  }catch(err){
-    console.error(err);
-  }
-};
-getcurrencynames();
-  },[])
   return (
     <>
-    <h1 className=' lg:mx-32 text-blue-400 text-5xl font-bold'>Calculate currency here </h1>
-    <p className='lg:mx-30 py-8 px-20'>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Enim autem tenetur laboriosam, eveniet corrupti saepe assumenda voluptatum maxime suscipit veritatis. Reprehenderit animi officiis quisquam reiciendis hic iusto distinctio inventore vitae.</p>
+      <h1 className="lg:mx-32 text-blue-400 text-5xl font-bold">Calculate currency here</h1>
+      <p className="lg:mx-30 py-8 px-20">
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Enim autem tenetur laboriosam, eveniet corrupti saepe assumenda voluptatum maxime suscipit veritatis.
+      </p>
 
-    <div  className="flex items-center justify-center flex-col">
-      <section className='w-full lg:w-1/2 '>
-        <form onSubmit={handlesubmit}>
-        <div class="mb-5">
-    <label htmlFor={date} class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date</label>
-    <input type="date"
-    onChange={(e)=>setdate(e.target.value)} 
-    id={date}
-    name={date}
-    value={date}
-     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" required />
-  </div>
+      <div className="flex items-center justify-center flex-col">
+        <section className="w-full lg:w-1/2">
+          <form onSubmit={handleSubmit}>
+            <div className="mb-5">
+              <label htmlFor="date" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Date
+              </label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required
+              />
+            </div>
 
-  <div className="mb-5">
-  <label htmlFor="sourcecurrency" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-    Source Currency
-  </label>
-  <select
-    onChange={(e) => setsourcecurrency(e.target.value)}
-    id="sourcecurrency"
-    name="sourcecurrency"
-    value={sourcecurrency}
-    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-    required
-  >
-    <option value="">Select source currency</option>
-    {Object.keys(currencynames).map((currency) => (
-  <option key={currency} value={currency}>
-    {currencynames[currency]}
-  </option>
-))}
+            <div className="mb-5">
+              <label htmlFor="sourceCurrency" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Source Currency
+              </label>
 
-  </select>
-</div>
 
-  <div class="mb-5">
-  <label htmlFor={targetcurrecy} class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Target Currency</label>
-    <select 
-    onChange={(e)=>settargetcurrency(e.target.value)}
-    id={targetcurrecy}
-    name={targetcurrecy}
-    value={targetcurrecy}
-     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" required>
-       <option>USD</option>
-      <option>UAD</option>
-      <option>INR</option>
-    </select>
-  </div>
+              <select
+                id="sourceCurrency"
+                name="sourceCurrency"
+                value={sourceCurrency}
+                onChange={(e) => setSourceCurrency(e.target.value)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5"
+                required
+              >
+                <option value="">Select source currency</option>
+                {currencyNames &&
+                  Object.entries(currencyNames).map(([code, name]) => (
+                    <option key={code} value={code}>
+                      {`${code} - ${name}`}
+                    </option>
+                  ))}
+              </select>
 
-  <div class="mb-5">
-    <label htmlFor={amountinsourcecurrency} class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Amount in source currency</label>
-    <input type="number" 
-    onChange={(e)=>setamountinsourcecurrency(e.target.value)}
-    id={amountinsourcecurrency}
-    name={amountinsourcecurrency}
-    value={amountinsourcecurrency}
-     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" required />
-  </div>
+            </div>
 
-  <button onClick={handlesubmit} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Submit</button>
-        </form>
-      </section>
-    </div>
+            <div className="mb-5">
+              <label htmlFor="targetCurrency" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Target Currency
+              </label>
+              <select
+                id="targetCurrency"
+                name="targetCurrency"
+                value={targetCurrency}
+                onChange={(e) => setTargetCurrency(e.target.value)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5"
+                required
+              >
+                <option value="">Select target currency</option>
+                {currencyNames &&
+                  Object.entries(currencyNames).map(([code, name]) => (
+                    <option key={code} value={code}>
+                      {`${code} - ${name}`}
+                    </option>
+                  ))}
+              </select>
+            </div>
+
+            <div className="mb-5">
+              <label htmlFor="amountInSourceCurrency" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Amount in source currency
+              </label>
+              <input
+                type="number"
+                id="amountInSourceCurrency"
+                name="amountInSourceCurrency"
+                value={amountInSourceCurrency}
+                onChange={(e) => setAmountInSourceCurrency(e.target.value)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required
+              />
+            </div>
+
+            <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+              Submit
+            </button>
+          </form>
+        </section>
+      </div>
     </>
-  )
+  );
 }
 
-export default Mainpage
+export default Mainpage;
