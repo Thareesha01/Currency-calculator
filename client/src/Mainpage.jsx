@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { use } from 'react'
 
 function Mainpage() {
@@ -7,12 +7,33 @@ function Mainpage() {
   const[targetcurrecy,settargetcurrency]=useState(null)
   const[amountinsourcecurrency,setamountinsourcecurrency]=useState(1)
   const[amountintargetcurrency,setamountintargetcurrency]=useState(1)
+  const[currencynames,setcurrencynames]=useState([])
 
   //handlesubmit
 
-  const handlesubmit=()=>{
-    console.log(date,sourcecurrency,targetcurrecy,amountinsourcecurrency);
+  const handlesubmit=(e)=>{
+    e.preventDefault();
+    console.log(
+      date,
+      sourcecurrency,
+      targetcurrecy,
+      amountinsourcecurrency
+    );
   }
+
+  useEffect(()=>{
+const getcurrencynames=async()=>{
+  try{
+    const responce = await axios.get(
+      "http://localhost:5000/getallcurrencies"
+    );
+    setcurrencynames(responce.data);
+  }catch(err){
+    console.error(err);
+  }
+};
+getcurrencynames();
+  },[])
   return (
     <>
     <h1 className=' lg:mx-32 text-blue-400 text-5xl font-bold'>Calculate currency here </h1>
@@ -31,19 +52,27 @@ function Mainpage() {
      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" required />
   </div>
 
-  <div class="mb-5">
-  <label htmlFor={sourcecurrency} class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Source Currency</label>
-    <select 
-    onChange={(e)=>setsourcecurrency(e.target.value)}
-    id={sourcecurrency}
-    name={sourcecurrency}
+  <div className="mb-5">
+  <label htmlFor="sourcecurrency" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+    Source Currency
+  </label>
+  <select
+    onChange={(e) => setsourcecurrency(e.target.value)}
+    id="sourcecurrency"
+    name="sourcecurrency"
     value={sourcecurrency}
-     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" required>
-      <option>USD</option>
-      <option>UAD</option>
-      <option>INR</option>
-    </select>
-  </div>
+    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+    required
+  >
+    <option value="">Select source currency</option>
+    {Object.keys(currencynames).map((currency) => (
+  <option key={currency} value={currency}>
+    {currencynames[currency]}
+  </option>
+))}
+
+  </select>
+</div>
 
   <div class="mb-5">
   <label htmlFor={targetcurrecy} class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Target Currency</label>
